@@ -15,6 +15,15 @@ input, textarea {
 </style>
 """, unsafe_allow_html=True)
 
+# get rid of auto side nav bar created by streamlit
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("AI Classwork Chatbot")
 st.write("Welcome! Please log in to continue.")
 
