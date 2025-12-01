@@ -2,6 +2,16 @@ import streamlit as st
 import requests
 
 st.set_page_config(page_title="Student Page", page_icon="💬")
+
+# css to change only the text color in input boxes
+st.markdown("""
+<style>
+input, textarea {
+    color: #EFEFEF !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Student Chatbot Page")
 
 if not st.session_state.get("logged_in") or st.session_state.get("role") != "Student":

@@ -2,6 +2,22 @@ import streamlit as st
 
 st.set_page_config(page_title="Professor Page", page_icon="📚")
 
+#change colors of file uploader
+st.markdown("""
+<style>
+[data-testid="stFileUploader"] > div {
+  background: var(--secondary-background-color) !important;
+  border: 1px dashed var(--primary-color) !important;
+  border-radius: 14px;
+  padding: 1rem;
+}
+[data-testid="stFileUploader"] label {
+  color: var(--text-color) !important;
+  font-weight: 600;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Professor Upload Page")
 
 if not st.session_state.get("logged_in") or st.session_state.get("role") != "Professor":
