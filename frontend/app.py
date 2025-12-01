@@ -6,6 +6,15 @@ API_BASE = "http://127.0.0.1:8000"
 
 st.set_page_config(page_title="AI Classwork Chatbot", page_icon="🤖")
 
+# css to change only the text color in input boxes
+st.markdown("""
+<style>
+input, textarea {
+    color: #EFEFEF !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("AI Classwork Chatbot")
 st.write("Welcome! Please log in to continue.")
 
