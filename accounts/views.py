@@ -3,6 +3,11 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .models import UserProfile
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+from .utils import extract_text, get_file_type
+from .models import UploadedFile
+
 
 @api_view(["POST"])
 def register(request):
@@ -30,3 +35,68 @@ def login_view(request):
         profile = UserProfile.objects.get(user=user)
         return Response({"username": user.username, "user_type": profile.user_type})
     return Response({"error": "Invalid credentials"}, status=401)
+
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
+def upload_file(request):
+    if 'file' not in request.FILES:
+        return Response({"error": "No file provided"}, status=400)
+    
+    file = request.FILES['file']
+    course_name = request.data.get('course_name', '')
+    
+    user = request.user if request.user.is_authenticated else None
+    if not user:
+        return Response({"error": "Must be logged in"}, status=401)
+    
+    file_type = get_file_type(file.name)
+    if not file_type:
+        return Response({"error": "Unsupported file type"}, status=400)
+    
+    uploaded_file = UploadedFile.objects.create(
+        professor=user,
+        file=file,
+        original_filename=file.name,
+        file_type=file_type,
+        course_name=course_name
+    )
+    
+    file_path = uploaded_file.file.path
+    extracted_text = extract_text(file_path, file_type)
+    uploaded_file.extracted_text = extracted_text
+    uploaded_file.save()
+    
+    return Response({
+        "message": "File uploaded successfully",
+        "file_id": uploaded_file.id,
+        "filename": uploaded_file.original_filename,
+        "file_type": uploaded_file.file_type
+    })
+
+@api_view(["GET"])
+def list_files(request):
+    user = request.user if request.user.is_authenticated else None
+    if not user:
+        return Response({"error": "Must be logged in"}, status=401)
+    
+    files = UploadedFile.objects.filter(professor=user).order_by('-uploaded_at')
+    
+    return Response({
+        "files": [{
+            "id": f.id,
+            "filename": f.original_filename,
+            "file_type": f.file_type,
+            "course_name": f.course_name,
+            "uploaded_at": f.uploaded_at,
+        } for f in files]
+    })
+
+@api_view(["DELETE"])
+def delete_file(request, file_id):
+    try:
+        file = UploadedFile.objects.get(id=file_id, professor=request.user)
+        file.file.delete()
+        file.delete()
+        return Response({"message": "File deleted"})
+    except UploadedFile.DoesNotExist:
+        return Response({"error": "File not found"}, status=404)
