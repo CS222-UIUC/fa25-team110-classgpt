@@ -7,7 +7,7 @@ from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from .utils import extract_text, get_file_type
 from .models import UploadedFile
-
+import ollama
 
 @api_view(["POST"])
 def register(request):
@@ -103,3 +103,63 @@ def delete_file(request, file_id):
         return Response({"message": "File deleted"})
     except UploadedFile.DoesNotExist:
         return Response({"error": "File not found"}, status=404)
+
+@api_view(["POST"])
+def chat(request):
+    """Chat with AI about uploaded course materials"""
+    question = request.data.get("question")
+    file_id = request.data.get("file_id")
+    chat_history = request.data.get("chat_history", [])  # Get chat history
+    
+    if not question:
+        return Response({"error": "No question provided"}, status=400)
+    
+    # Get file content if file_id provided
+    context = ""
+    if file_id:
+        try:
+            file = UploadedFile.objects.get(id=file_id)
+            context = f"Context from {file.original_filename}:\n{file.extracted_text}\n\n"
+        except UploadedFile.DoesNotExist:
+            pass
+    
+    # Build messages with history
+    messages = []
+    
+    # Add system message with context
+    if context:
+        messages.append({
+            'role': 'system',
+            'content': f"{context}You are a helpful study assistant. Answer questions based on the course materials concisely."
+        })
+    
+    # Add chat history
+    for msg in chat_history:
+        messages.append({
+            'role': msg['role'],
+            'content': msg['content']
+        })
+    
+    # Add current question
+    messages.append({
+        'role': 'user',
+        'content': question
+    })
+    
+    try:
+        # Call Ollama with full conversation
+        response = ollama.chat(
+            model='llama3.2:3b',
+            messages=messages
+        )
+        
+        answer = response['message']['content']
+        
+        return Response({
+            "question": question,
+            "answer": answer,
+            "file_used": file.original_filename if file_id else None
+        })
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)

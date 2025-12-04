@@ -9,4 +9,5 @@ urlpatterns = [
     path('upload/', views.upload_file),
     path('files/', views.list_files),
     path('files/<int:file_id>/delete/', views.delete_file),
+    path('chat/', views.chat),
 ]
