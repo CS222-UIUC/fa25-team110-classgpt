@@ -4,6 +4,15 @@ import requests
 st.set_page_config(page_title="Professor Page", page_icon="📚")
 st.title("Professor Upload Page")
 
+# delete side nav bar created by streamlit
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 if not st.session_state.get("logged_in") or st.session_state.get("role") != "Professor":
     st.error("Access denied. Please log in as a Professor.")
     st.stop()
