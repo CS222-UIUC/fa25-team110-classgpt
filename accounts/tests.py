@@ -7,6 +7,16 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 import json
 
 
+# Test credential constants (NOT production credentials)
+TEST_USERNAME = 'testuser'
+TEST_PASSWORD = 'test_password_123'
+TEST_EMAIL = 'test@example.com'
+
+PROF_USERNAME = 'professor1'
+PROF_PASSWORD = 'prof_password_123'
+PROF_EMAIL = 'prof@example.com'
+
+
 class UserAuthenticationTests(APITestCase):
     """Test suite for user authentication endpoints"""
 
@@ -16,9 +26,9 @@ class UserAuthenticationTests(APITestCase):
         self.register_url = '/api/auth/register/'
         self.login_url = '/api/auth/login/'
         self.valid_user_data = {
-            'username': 'testuser',
-            'password': 'testpass123',
-            'email': 'test@example.com',
+            'username': TEST_USERNAME,
+            'password': TEST_PASSWORD,
+            'email': TEST_EMAIL,
             'user_type': 'student'
         }
 
@@ -28,21 +38,21 @@ class UserAuthenticationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'User created')
         self.assertEqual(response.data['user_type'], 'student')
-        self.assertTrue(User.objects.filter(username='testuser').exists())
+        self.assertTrue(User.objects.filter(username=TEST_USERNAME).exists())
 
     def test_register_professor(self):
         """Test registering a professor user"""
         professor_data = {
-            'username': 'professor1',
-            'password': 'profpass123',
-            'email': 'prof@example.com',
+            'username': PROF_USERNAME,
+            'password': PROF_PASSWORD,
+            'email': PROF_EMAIL,
             'user_type': 'professor'
         }
         response = self.client.post(self.register_url, professor_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['user_type'], 'professor')
         
-        profile = UserProfile.objects.get(user__username='professor1')
+        profile = UserProfile.objects.get(user__username=PROF_USERNAME)
         self.assertEqual(profile.user_type, 'professor')
 
     def test_register_duplicate_username(self):
@@ -52,8 +62,8 @@ class UserAuthenticationTests(APITestCase):
         
         # Try to create another with same username
         duplicate_data = {
-            'username': 'testuser',
-            'password': 'different_password',
+            'username': TEST_USERNAME,
+            'password': 'different_test_pass',
             'email': 'different@example.com'
         }
         response = self.client.post(self.register_url, duplicate_data, format='json')
@@ -63,8 +73,8 @@ class UserAuthenticationTests(APITestCase):
     def test_register_missing_fields(self):
         """Test registration fails when required fields are missing"""
         incomplete_data = {
-            'username': 'testuser',
-            'password': 'testpass123'
+            'username': TEST_USERNAME,
+            'password': TEST_PASSWORD
         }
         response = self.client.post(self.register_url, incomplete_data, format='json')
         # Should fail or return validation error
@@ -77,12 +87,12 @@ class UserAuthenticationTests(APITestCase):
         
         # Login
         login_data = {
-            'username': 'testuser',
-            'password': 'testpass123'
+            'username': TEST_USERNAME,
+            'password': TEST_PASSWORD
         }
         response = self.client.post(self.login_url, login_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['username'], 'testuser')
+        self.assertEqual(response.data['username'], TEST_USERNAME)
         self.assertEqual(response.data['user_type'], 'student')
 
     def test_login_invalid_credentials(self):
@@ -92,8 +102,8 @@ class UserAuthenticationTests(APITestCase):
         
         # Try to login with wrong password
         invalid_login = {
-            'username': 'testuser',
-            'password': 'wrongpassword'
+            'username': TEST_USERNAME,
+            'password': 'incorrect_password_xyz'
         }
         response = self.client.post(self.login_url, invalid_login, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -102,8 +112,8 @@ class UserAuthenticationTests(APITestCase):
     def test_login_nonexistent_user(self):
         """Test login fails for non-existent user"""
         login_data = {
-            'username': 'nonexistent',
-            'password': 'somepassword'
+            'username': 'nonexistent_user',
+            'password': 'some_pass'
         }
         response = self.client.post(self.login_url, login_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -121,13 +131,13 @@ class FileUploadTests(APITestCase):
         
         # Create a professor user
         professor_data = {
-            'username': 'professor1',
-            'password': 'profpass123',
-            'email': 'prof@example.com',
+            'username': PROF_USERNAME,
+            'password': PROF_PASSWORD,
+            'email': PROF_EMAIL,
             'user_type': 'professor'
         }
         self.client.post(self.register_url, professor_data, format='json')
-        self.professor = User.objects.get(username='professor1')
+        self.professor = User.objects.get(username=PROF_USERNAME)
 
     def test_upload_pdf_file(self):
         """Test uploading a PDF file"""
@@ -248,9 +258,9 @@ class FileDeleteTests(APITestCase):
         
         # Create a professor user
         professor_data = {
-            'username': 'professor1',
-            'password': 'profpass123',
-            'email': 'prof@example.com',
+            'username': PROF_USERNAME,
+            'password': PROF_PASSWORD,
+            'email': PROF_EMAIL,
             'user_type': 'professor'
         }
         self.client.post(self.register_url, professor_data, format='json')
@@ -294,9 +304,9 @@ class ChatAPITests(APITestCase):
         
         # Create a professor user
         professor_data = {
-            'username': 'professor1',
-            'password': 'profpass123',
-            'email': 'prof@example.com',
+            'username': PROF_USERNAME,
+            'password': PROF_PASSWORD,
+            'email': PROF_EMAIL,
             'user_type': 'professor'
         }
         self.client.post(self.register_url, professor_data, format='json')
@@ -390,16 +400,16 @@ class IntegrationTests(APITestCase):
         """Test complete workflow: register -> upload -> list -> delete"""
         # Register as professor
         professor_data = {
-            'username': 'professor',
-            'password': 'pass123',
-            'email': 'prof@test.com',
+            'username': 'test_prof_workflow',
+            'password': 'test_prof_pass_workflow',
+            'email': 'prof_workflow@test.com',
             'user_type': 'professor'
         }
         reg_response = self.client.post(self.register_url, professor_data, format='json')
         self.assertEqual(reg_response.status_code, status.HTTP_200_OK)
         
         # Login
-        login_data = {'username': 'professor', 'password': 'pass123'}
+        login_data = {'username': 'test_prof_workflow', 'password': 'test_prof_pass_workflow'}
         login_response = self.client.post(self.login_url, login_data, format='json')
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
         
@@ -431,8 +441,8 @@ class IntegrationTests(APITestCase):
         """Test registration flow for both student and professor"""
         # Register student
         student_data = {
-            'username': 'student1',
-            'password': 'pass123',
+            'username': 'test_student_reg',
+            'password': 'test_student_pass',
             'email': 'student@test.com',
             'user_type': 'student'
         }
@@ -441,8 +451,8 @@ class IntegrationTests(APITestCase):
         
         # Register professor
         professor_data = {
-            'username': 'professor1',
-            'password': 'pass123',
+            'username': 'test_prof_reg',
+            'password': 'test_prof_pass',
             'email': 'prof@test.com',
             'user_type': 'professor'
         }
@@ -450,11 +460,11 @@ class IntegrationTests(APITestCase):
         self.assertEqual(professor_response.status_code, status.HTTP_200_OK)
         
         # Verify both exist
-        self.assertTrue(User.objects.filter(username='student1').exists())
-        self.assertTrue(User.objects.filter(username='professor1').exists())
+        self.assertTrue(User.objects.filter(username='test_student_reg').exists())
+        self.assertTrue(User.objects.filter(username='test_prof_reg').exists())
         
         # Verify types
-        student_profile = UserProfile.objects.get(user__username='student1')
-        professor_profile = UserProfile.objects.get(user__username='professor1')
+        student_profile = UserProfile.objects.get(user__username='test_student_reg')
+        professor_profile = UserProfile.objects.get(user__username='test_prof_reg')
         self.assertEqual(student_profile.user_type, 'student')
         self.assertEqual(professor_profile.user_type, 'professor')
