@@ -2,6 +2,17 @@ import streamlit as st
 import requests
 
 st.set_page_config(page_title="Professor Page", page_icon="📚")
+
+# change overall font
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+html, body, [class*="css"]  {
+    font-family: 'Rubik', sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Professor Upload Page")
 
 # delete side nav bar created by streamlit
