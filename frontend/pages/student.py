@@ -12,6 +12,15 @@ input, textarea {
 </style>
 """, unsafe_allow_html=True)
 
+# delete side nav bar created by streamlit
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("AI Study Assistant")
 
 if not st.session_state.get("logged_in") or st.session_state.get("role") != "Student":
