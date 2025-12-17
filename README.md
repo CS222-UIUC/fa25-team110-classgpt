@@ -2,17 +2,9 @@
 
 ## Project Overview
 
-The AI Classwork Chatbot is a Python-based, full-stack web application designed to assist students and professors with class-related questions through an interactive AI-powered chat interface. The system supports user authentication, role-based access, and AI-generated responses, all while running locally for privacy and ease of development.
+ClassGPT is a Python-based, full-stack web application designed to help students and professors interact with class materials more effectively and with more integrity with an AI powered academic chatbot. The platform allows professors to upload course materials such as lecture slides, study guides, practice quizzes, etc. and students can then use the chatbot interface to ask questions and recieve contextual answers that are derived from the material provided by the professor. 
 
-This project combines a lightweight frontend, a robust backend, and a locally hosted large language model to create a modular and extensible educational tool.
-
----
-
-## Presentation Summary / Introduction
-
-Our project demonstrates how modern AI tools can be integrated into a traditional web architecture to enhance learning experiences. We built a chatbot that allows authenticated students and professors to interact with an AI model in a controlled academic setting. By separating the frontend, backend, and AI layers, we ensure clarity of design, security, and maintainability.
-
-The chatbot is powered by a locally hosted large language model using Ollama, which avoids reliance on cloud APIs and provides greater control over data and behavior. This architecture reflects real-world software engineering practices and highlights how AI systems can be responsibly integrated into educational applications.
+ClassGPT enhances learning by allowing students to clarify concepts at anytime while maintaining academic integrity through instructor oversight. Unlike general chatbots, ClassGPT ensures that all information is course-specific (ex. all formulas/content are taught the way the professor teaches in class), approved by the professor, and securely managed.
 
 ---
 
@@ -125,14 +117,20 @@ The Streamlit app will open in your browser.
 
 ## Group Members and Roles
 
-* **Julia** – Backend development, Chatbot logic, Ollama integration
-* **Stephanie** – System testing, Backend development, Django API setup
-* **Jenna** – Frontend development, login and authentication system
-* **Samika** – Backend/Frontend development, system integration
+* **Julia** – Backend Team - Integrated the Ollama chatbot and implemented course material parsing
+* **Stephanie** – Backend Team - Built test users, created test cases, and Django API setup
+* **Jenna** – Frontend Team - Created the login page frontend and implemented UI improvements
+* **Samika** – Frontend Team - Developed the Streamlit interface and implemented UI improvements
+* **Entire Team** - All members contributed to testing, debugging, and integration between the frontend and backend
 
 ---
 
-## Notes
+## Notes / Future Work
 
 * This project is designed to run locally for development and demonstration purposes.
 * The modular architecture allows easy extension, such as adding logging, chat history, or new AI models.
+* We plan for future enhancements which include: 
+1. Professor dashboard with analytics to track student engagement and common question areas
+2. OAuth for Student/Professor login
+3. Document summarization for uploaded materials
+4. Fine tune chatbot to allow professor to omit certain things from answers 
