@@ -2,6 +2,17 @@ import streamlit as st
 import requests
 
 st.set_page_config(page_title="Student Page", page_icon="📖")
+# change overall font
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+html, body, [class*="css"]  {
+    font-family: 'Rubik', sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 
 # css to change only the text color in input boxes
 st.markdown("""
@@ -21,7 +32,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("AI Study Assistant")
+st.title("ClassGPT - AI Study Assistant")
+
+st.caption("Ask questions, review materials, and study smarter with your class personalized chatbot")
+st.divider()
+
 
 if not st.session_state.get("logged_in") or st.session_state.get("role") != "Student":
     st.error("Access denied. Please log in as a Student.")
@@ -46,7 +61,8 @@ if files:
     )
 else:
     selected_file = None
-    st.info("No course materials uploaded yet.")
+    st.warning("⚠️ No course materials uploaded yet — ask your professor to upload some!")
+
 
 # Clear chat button
 col1, col2 = st.columns([4, 1])
@@ -57,6 +73,8 @@ with col2:
 
 # Chat interface
 st.subheader("Ask Questions")
+st.markdown("💡 *Tip: Ask about topics, key terms, or explanations from your uploaded slides.*")
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
