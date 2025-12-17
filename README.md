@@ -1,4 +1,4 @@
-# AI Classwork Chatbot
+# ClassGPT - AI Classwork Chatbot
 
 ## Project Overview
 
@@ -134,3 +134,4 @@ The Streamlit app will open in your browser.
 2. OAuth for Student/Professor login
 3. Document summarization for uploaded materials
 4. Fine tune chatbot to allow professor to omit certain things from answers 
+
